@@ -1,19 +1,16 @@
 [project]
 dependencies = [
-  "google-adk[all]>=0.5.0",
-  "litellm>=1.68.1",
-  "pydantic>=2.11.4",
-  "pydantic-settings>=2.9.1",
-  "python-dotenv>=1.1.0",
+  "google-adk>=0.5.0",
+  "pyside6>=6.9.0",
 ]
-description = "Add your description here"
+description = "My first ADK agents"
 name = "my-first-adk"
 readme = "README.md"
 requires-python = ">=3.13"
 version = "0.1.0"
 
 [tool.poe.tasks]
-agent.script = "my_first_adk.__main__:main"
+app.script = "app.main:main"
 
 [tool.pyright]
 exclude = ["**/__pycache__", "**/.venv", "**/venv", "**/.mypy_cache"]
@@ -35,6 +32,12 @@ typeCheckingMode = "strict"
 
 [tool.ruff]
 line-length = 180
+
+# [tool.hatch.build.targets.wheel]
+# packages = ["src"]
+
+[tool.uv.workspace]
+members = ["my_agents", "app"]
 
 [dependency-groups]
 dev = [

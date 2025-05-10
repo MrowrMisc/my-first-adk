@@ -3,7 +3,7 @@ from uuid import uuid4
 
 from dotenv import find_dotenv, load_dotenv
 from google.adk import Runner
-from google.adk.sessions import InMemorySessionService, Session
+from google.adk.sessions import DatabaseSessionService, Session
 from google.genai import types
 
 from .agent import my_first_agent
@@ -22,7 +22,10 @@ def main():
     user_id = "mrowrpurr"
     session_id = str(uuid4())
 
-    session_service = InMemorySessionService()
+    # session_service = InMemorySessionService()
+    session_service = DatabaseSessionService(
+        db_url="sqlite:///./my_first_adk_sessions.db",
+    )
     initial_state: dict[str, Any] = {}
 
     session = session_service.create_session(
