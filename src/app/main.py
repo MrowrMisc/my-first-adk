@@ -137,7 +137,7 @@ class MainWindow(QMainWindow):
         session = self.sessions[index]
         for msg in session.messages:
             bubble = ChatBubble(msg)
-            align = Qt.AlignRight if msg.sender == "user" else Qt.AlignLeft
+            align = Qt.AlignmentFlag.AlignRight if msg.sender == "user" else Qt.AlignmentFlag.AlignLeft
             self.chat_layout.addWidget(bubble, alignment=align)
 
     def _on_send(self) -> None:
@@ -165,7 +165,7 @@ class MainWindow(QMainWindow):
 
         # create bubble and add to UI
         bubble = ChatBubble(msg)
-        align = Qt.AlignRight if msg.sender == "user" else Qt.AlignLeft
+        align = Qt.AlignmentFlag.AlignRight if msg.sender == "user" else Qt.AlignmentFlag.AlignLeft
         self.chat_layout.addWidget(bubble, alignment=align)
 
 
