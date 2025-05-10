@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Callable, Literal
 
-from PySide6.QtCore import QSize, Qt
+from PySide6.QtCore import QSize, Qt, QTimer
 from PySide6.QtGui import QKeyEvent, QTextOption
 from PySide6.QtWidgets import QApplication, QHBoxLayout, QListWidget, QListWidgetItem, QMainWindow, QPushButton, QScrollArea, QSizePolicy, QTextEdit, QVBoxLayout, QWidget
 
@@ -14,7 +14,7 @@ class InputTextEdit(QTextEdit):
         self.send_callback = send_callback
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
-        if event.key() in (Qt.Key_Return, Qt.Key_Enter) and not (event.modifiers() & Qt.ShiftModifier):
+        if event.key() in (Qt.KeyboardKey.Key_Return, Qt.KeyboardKey.Key_Enter) and not (event.modifiers() & Qt.KeyboardModifier.ShiftModifier):
             self.send_callback()
         else:
             super().keyPressEvent(event)
@@ -44,7 +44,7 @@ class ChatBubble(QWidget):
         bubble.setFrameStyle(0)
         bubble.setText(self.message.text)
         bubble.setWordWrapMode(QTextOption.WrapMode.WordWrap)
-        bubble.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        bubble.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         layout = QVBoxLayout(self)
         layout.addWidget(bubble)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -80,9 +80,9 @@ class MainWindow(QMainWindow):
         right_layout.setSpacing(4)
 
         self.scroll_content = QWidget()
-        self.scroll_content.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.scroll_content.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.scroll_layout = QVBoxLayout(self.scroll_content)
-        self.scroll_layout.setAlignment(Qt.AlignTop)
+        self.scroll_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
@@ -120,11 +120,45 @@ class MainWindow(QMainWindow):
         self.setStyleSheet(qss)
 
     def _init_sessions(self) -> None:
-        session = Session(id="Session 1", messages=[])
-        self.sessions.append(session)
-        item = QListWidgetItem(session.id)
-        self.session_list.addItem(item)
-        self.session_list.setCurrentItem(item)
+        # Create multiple sessions with fake data
+        self.sessions = [
+            Session(id="Session 1", messages=[]),
+            Session(
+                id="Python Help",
+                messages=[
+                    Message(sender="user", text="How do I create a virtual environment in Python?"),
+                    Message(
+                        sender="ai",
+                        text="You can create a virtual environment using the `venv` module:\n\n```python\npython -m venv myenv\n```\n\nThen activate it:\n- Windows: `myenv\\Scripts\\activate`\n- Mac/Linux: `source myenv/bin/activate`",
+                    ),
+                    Message(sender="user", text="Thanks! And how do I install packages?"),
+                    Message(sender="ai", text="After activating your virtual environment, use pip:\n\n```\npip install package_name\n```\n\nFor example: `pip install requests`"),
+                ],
+            ),
+            Session(
+                id="Travel Ideas",
+                messages=[
+                    Message(sender="user", text="What are some good places to visit in Japan?"),
+                    Message(
+                        sender="ai",
+                        text="Japan has many amazing places to visit! Here are some highlights:\n\n1. Tokyo - Modern metropolis with districts like Shibuya and Shinjuku\n2. Kyoto - Traditional temples, shrines and gardens\n3. Osaka - Known for food and nightlife\n4. Hokkaido - Beautiful nature and skiing\n5. Hiroshima - Historical sites and peace memorial",
+                    ),
+                    Message(sender="user", text="Which season is best to visit?"),
+                    Message(
+                        sender="ai",
+                        text="Spring (March-May) for cherry blossoms, Fall (Sept-Nov) for autumn colors, and Winter for skiing in Hokkaido. Summer can be hot and humid but good for festivals. Each season offers a unique experience!",
+                    ),
+                ],
+            ),
+        ]
+
+        # Populate the session list
+        for session in self.sessions:
+            item = QListWidgetItem(session.id)
+            self.session_list.addItem(item)
+
+        # Select the first session
+        self.session_list.setCurrentItem(self.session_list.item(0))
         self._load_session(0)
 
     def _on_session_clicked(self, item: QListWidgetItem) -> None:
@@ -132,16 +166,49 @@ class MainWindow(QMainWindow):
         self._load_session(idx)
 
     def _load_session(self, index: int) -> None:
-        # clear
+        # Clear current chat
         for i in reversed(range(self.scroll_layout.count())):
             w = self.scroll_layout.itemAt(i).widget()
             if w:
                 w.setParent(None)
+
+        # Show loading message
+        loading_msg = Message(sender="ai", text="Loading messages...")
+        loading_bubble = ChatBubble(loading_msg)
+        self.scroll_layout.addWidget(loading_bubble, alignment=Qt.AlignmentFlag.AlignLeft)
+
+        # Simulate async loading with a timer
+        QTimer.singleShot(800, lambda: self._display_session_messages(index, loading_bubble))
+
+    def _display_session_messages(self, index: int, loading_bubble: ChatBubble) -> None:
+        # Remove loading bubble
+        loading_bubble.setParent(None)
+
+        # Display actual messages
         session = self.sessions[index]
         for msg in session.messages:
             bubble = ChatBubble(msg)
-            align = Qt.AlignRight if msg.sender == "user" else Qt.AlignLeft
-            self.scroll_layout.addWidget(bubble, alignment=align)
+
+            # Create a wrapper widget to handle alignment and width
+            wrapper = QWidget()
+            wrapper_layout = QHBoxLayout(wrapper)
+            wrapper_layout.setContentsMargins(0, 0, 0, 0)
+            wrapper_layout.setSpacing(0)
+
+            # Set up alignment based on sender
+            bubble.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+
+            if msg.sender == "user":
+                # User messages: right-aligned with left margin
+                wrapper_layout.addStretch(1)  # Left margin (flexible)
+                wrapper_layout.addWidget(bubble, 9)  # Give bubble 90% of space
+            else:
+                # AI messages: left-aligned with right margin
+                wrapper_layout.addWidget(bubble, 9)  # Give bubble 90% of space
+                wrapper_layout.addStretch(1)  # Right margin (flexible)
+
+            # Add the wrapper to the main layout
+            self.scroll_layout.addWidget(wrapper)
 
     def _on_send(self) -> None:
         text = self.input_box.toPlainText().strip()
@@ -156,9 +223,29 @@ class MainWindow(QMainWindow):
     def _add_message(self, msg: Message) -> None:
         idx = self.session_list.currentRow()
         self.sessions[idx].messages.append(msg)
+
         bubble = ChatBubble(msg)
-        align = Qt.AlignRight if msg.sender == "user" else Qt.AlignLeft
-        self.scroll_layout.addWidget(bubble, alignment=align)
+
+        # Create a wrapper widget to handle alignment and width
+        wrapper = QWidget()
+        wrapper_layout = QHBoxLayout(wrapper)
+        wrapper_layout.setContentsMargins(0, 0, 0, 0)
+        wrapper_layout.setSpacing(0)
+
+        # Set up alignment based on sender
+        bubble.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+
+        if msg.sender == "user":
+            # User messages: right-aligned with left margin
+            wrapper_layout.addStretch(1)  # Left margin (flexible)
+            wrapper_layout.addWidget(bubble, 9)  # Give bubble 90% of space
+        else:
+            # AI messages: left-aligned with right margin
+            wrapper_layout.addWidget(bubble, 9)  # Give bubble 90% of space
+            wrapper_layout.addStretch(1)  # Right margin (flexible)
+
+        # Add the wrapper to the main layout
+        self.scroll_layout.addWidget(wrapper)
 
 
 def main() -> None:
