@@ -12,7 +12,7 @@ def get_users_name() -> str:
     return "The user's name is Sally Smith the First."
 
 
-root_agent = Agent(
+my_first_agent = Agent(
     name="anything_agent",
     model=LiteLlm("openrouter/openai/o3-mini"),
     description="Agent to answer questions.",

@@ -12,6 +12,9 @@ readme = "README.md"
 requires-python = ">=3.13"
 version = "0.1.0"
 
+[tool.poe.tasks]
+agent.script = "my_first_adk.__main__:main"
+
 [tool.pyright]
 exclude = ["**/__pycache__", "**/.venv", "**/venv", "**/.mypy_cache"]
 reportCallInDefaultInitializer = true
@@ -32,3 +35,8 @@ typeCheckingMode = "strict"
 
 [tool.ruff]
 line-length = 180
+
+[dependency-groups]
+dev = [
+  "poethepoet>=0.34.0",
+]
