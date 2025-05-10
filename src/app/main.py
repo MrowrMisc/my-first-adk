@@ -5,7 +5,7 @@ from typing import Callable, Literal
 
 from PySide6.QtCore import QSize, Qt, QTimer
 from PySide6.QtGui import QKeyEvent, QTextOption
-from PySide6.QtWidgets import QApplication, QHBoxLayout, QListWidget, QListWidgetItem, QMainWindow, QPushButton, QScrollArea, QSizePolicy, QTextEdit, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QApplication, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QMainWindow, QPushButton, QScrollArea, QSizePolicy, QTextEdit, QVBoxLayout, QWidget
 
 
 class InputTextEdit(QTextEdit):
@@ -173,16 +173,17 @@ class MainWindow(QMainWindow):
                 w.setParent(None)
 
         # Show loading message
-        loading_msg = Message(sender="ai", text="Loading messages...")
-        loading_bubble = ChatBubble(loading_msg)
-        self.scroll_layout.addWidget(loading_bubble, alignment=Qt.AlignmentFlag.AlignLeft)
+        loading_label = QLabel("Loading...")
+        loading_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        loading_label.setStyleSheet("color: #888; font-style: italic; margin: 20px 0;")
+        self.scroll_layout.addWidget(loading_label)
 
         # Simulate async loading with a timer
-        QTimer.singleShot(800, lambda: self._display_session_messages(index, loading_bubble))
+        QTimer.singleShot(800, lambda: self._display_session_messages(index, loading_label))
 
-    def _display_session_messages(self, index: int, loading_bubble: ChatBubble) -> None:
-        # Remove loading bubble
-        loading_bubble.setParent(None)
+    def _display_session_messages(self, index: int, loading_label: QLabel) -> None:
+        # Remove loading label
+        loading_label.setParent(None)
 
         # Display actual messages
         session = self.sessions[index]
