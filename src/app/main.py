@@ -1,11 +1,23 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Literal
+from typing import Callable, Literal
 
 from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import QTextOption
 from PySide6.QtWidgets import QApplication, QHBoxLayout, QListWidget, QListWidgetItem, QMainWindow, QPushButton, QScrollArea, QTextEdit, QVBoxLayout, QWidget
+
+
+class InputTextEdit(QTextEdit):
+    def __init__(self, send_callback: Callable[[], None], parent: QWidget | None = None) -> None:
+        super().__init__(parent)
+        self.send_callback = send_callback
+
+    def keyPressEvent(self, event) -> None:
+        if event.key() in (Qt.Key_Return, Qt.Key_Enter) and not (event.modifiers() & Qt.ShiftModifier):
+            self.send_callback()
+        else:
+            super().keyPressEvent(event)
 
 
 @dataclass
@@ -88,7 +100,7 @@ class MainWindow(QMainWindow):
         input_row = QWidget()
         input_layout = QHBoxLayout(input_row)
         input_layout.setContentsMargins(0, 0, 0, 0)
-        self.input_box = QTextEdit()
+        self.input_box = InputTextEdit(self._on_send)
         self.input_box.setFixedHeight(60)
         self.send_button = QPushButton("Send")
         self.send_button.clicked.connect(self._on_send)
