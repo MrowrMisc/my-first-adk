@@ -2,13 +2,6 @@ version = 1
 revision = 2
 requires-python = ">=3.13"
 
-[manifest]
-members = [
-    "app",
-    "my-agents",
-    "my-first-adk",
-]
-
 [[package]]
 name = "annotated-types"
 version = "0.7.0"
@@ -29,21 +22,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/95/7d/4c1bd541d4dffa1b52bd83fb8527089e097a106fc90b467a7313b105f840/anyio-4.9.0.tar.gz", hash = "sha256:673c0c244e15788651a4ff38710fea9675823028a6f08a5eda409e0c9840a028", size = 190949, upload-time = "2025-03-17T00:02:54.77Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a1/ee/48ca1a7c89ffec8b6a0c5d02b89c305671d5ffd8d3c94acf8b8c408575bb/anyio-4.9.0-py3-none-any.whl", hash = "sha256:9f76d541cad6e36af7beb62e978876f3b41e3e04f2c1fbf0884604c0a9c4d93c", size = 100916, upload-time = "2025-03-17T00:02:52.713Z" },
-]
-
-[[package]]
-name = "app"
-version = "0.1.0"
-source = { virtual = "app" }
-dependencies = [
-    { name = "pyside6" },
-    { name = "qasync" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "pyside6", specifier = ">=6.9.0" },
-    { name = "qasync", specifier = ">=0.27.1" },
 ]
 
 [[package]]
@@ -683,17 +661,6 @@ wheels = [
 ]
 
 [[package]]
-name = "my-agents"
-version = "0.1.0"
-source = { virtual = "my_agents" }
-dependencies = [
-    { name = "google-adk" },
-]
-
-[package.metadata]
-requires-dist = [{ name = "google-adk", specifier = ">=0.5.0" }]
-
-[[package]]
 name = "my-first-adk"
 version = "0.1.0"
 source = { virtual = "." }
@@ -1060,15 +1027,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/fe/0f/25911a9f080464c59fab9027482f822b86bf0608957a5fcc6eaac85aa515/PyYAML-6.0.2-cp313-cp313-musllinux_1_1_x86_64.whl", hash = "sha256:68ccc6023a3400877818152ad9a1033e3db8625d899c72eacb5a668902e4d652", size = 751597, upload-time = "2024-08-06T20:32:56.985Z" },
     { url = "https://files.pythonhosted.org/packages/14/0d/e2c3b43bbce3cf6bd97c840b46088a3031085179e596d4929729d8d68270/PyYAML-6.0.2-cp313-cp313-win32.whl", hash = "sha256:bc2fa7c6b47d6bc618dd7fb02ef6fdedb1090ec036abab80d4681424b84c1183", size = 140527, upload-time = "2024-08-06T20:33:03.001Z" },
     { url = "https://files.pythonhosted.org/packages/fa/de/02b54f42487e3d3c6efb3f89428677074ca7bf43aae402517bc7cca949f3/PyYAML-6.0.2-cp313-cp313-win_amd64.whl", hash = "sha256:8388ee1976c416731879ac16da0aff3f63b286ffdd57cdeb95f3f2e085687563", size = 156446, upload-time = "2024-08-06T20:33:04.33Z" },
-]
-
-[[package]]
-name = "qasync"
-version = "0.27.1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/1c/e0/7c7c973f52e1765d6ddfc41e9272294f65d5d52b8f5f5eae92adf411ad46/qasync-0.27.1.tar.gz", hash = "sha256:8dc768fd1ee5de1044c7c305eccf2d39d24d87803ea71189d4024fb475f4985f", size = 14287, upload-time = "2023-11-19T14:19:55.535Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/51/06/bc628aa2981bcfd452a08ee435b812fd3eee4ada8acb8a76c4a09d1a5a77/qasync-0.27.1-py3-none-any.whl", hash = "sha256:5d57335723bc7d9b328dadd8cb2ed7978640e4bf2da184889ce50ee3ad2602c7", size = 14866, upload-time = "2023-11-19T14:19:54.345Z" },
 ]
 
 [[package]]
